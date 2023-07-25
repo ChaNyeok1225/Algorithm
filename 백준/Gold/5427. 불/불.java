@@ -18,25 +18,24 @@ public class Main {
 		
 		for(int tc = 0; tc < T; tc++) {
 			st = new StringTokenizer(br.readLine());
-			int c = Integer.parseInt(st.nextToken());
-			int r = Integer.parseInt(st.nextToken());
+			int m = Integer.parseInt(st.nextToken());
+			int n = Integer.parseInt(st.nextToken());
 			
-			int[][] Stime = new int[r][c];
-			int[][] Ftime = new int[r][c];
-			for(int i = 0; i < r; i++) {
-				Arrays.fill(Stime[i], 0, c, -1);
-				Arrays.fill(Ftime[i], 0, c, -1);
+			int[][] board = new int[n][m];
+			int[][] Ftime = new int[n][m];
+			int[][] Stime = new int[n][m];
+			
+			for(int i = 0; i < n; i++) {
+				Arrays.fill(Ftime[i],-1);
+				Arrays.fill(Stime[i],-1);
 			}
 			
-			
-			char[][] board = new char[r][c];
-			
-			LinkedList<int[]> sq = new LinkedList<>();
 			LinkedList<int[]> fq = new LinkedList<>();
+			LinkedList<int[]> sq = new LinkedList<>();
 			
-			for(int i = 0; i < r; i++) {
+			for(int i = 0; i < n; i++) {
 				char[] ch = br.readLine().toCharArray();
-				for(int j = 0; j < c; j++) {
+				for(int j = 0; j < m; j++) {
 					board[i][j] = ch[j];
 					if(ch[j] == '@') {
 						sq.add(new int[] {i,j});
@@ -48,6 +47,7 @@ public class Main {
 					}
 				}
 			}
+			
 			while(!fq.isEmpty()) {
 				int[] p = fq.pop();
 				
@@ -55,11 +55,14 @@ public class Main {
 					int nx = p[0] + dx[dir];
 					int ny = p[1] + dy[dir];
 					
-					if(nx < 0 || ny < 0 || nx >= r || ny >= c) continue;
-					if(board[nx][ny] == '#' || Ftime[nx][ny] >= 0) continue;
+					if(nx < 0 || ny < 0 || n <= nx || m <= ny)
+						continue;
+					if(Ftime[nx][ny] >= 0 || board[nx][ny] == '#')
+						continue;
 					
 					Ftime[nx][ny] = Ftime[p[0]][p[1]] + 1;
 					fq.add(new int[] {nx,ny});
+					
 				}
 			}
 			
@@ -71,22 +74,24 @@ public class Main {
 					int nx = p[0] + dx[dir];
 					int ny = p[1] + dy[dir];
 					
-					if(nx < 0 || ny < 0 || nx >= r || ny >= c) {
+					if(nx < 0 || ny < 0 || n <= nx || m <= ny) {
 						time = Stime[p[0]][p[1]] + 1;
 						break l;
 					}
-					if(board[nx][ny] == '#' || Stime[nx][ny] >= 0) continue;
+					if(Stime[nx][ny] >= 0 || board[nx][ny] == '#')
+						continue;
 					if(Ftime[nx][ny] != -1 && Ftime[nx][ny] <= Stime[p[0]][p[1]] + 1)
 						continue;
 					
 					Stime[nx][ny] = Stime[p[0]][p[1]] + 1;
 					sq.add(new int[] {nx,ny});
+					
 				}
 			}
-
-			if(time == 0)
+			
+			if (time == 0)
 				sb.append("IMPOSSIBLE\n");
-			else
+			else 
 				sb.append(time + "\n");
 		}
 		
