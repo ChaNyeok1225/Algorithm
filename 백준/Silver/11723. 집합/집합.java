@@ -8,45 +8,43 @@ public class Main {
 
 	public static void main(String[] args) throws IOException {
 
-		HashSet<String> set = new HashSet<>();
-
 		int n = Integer.parseInt(br.readLine());
 
+		int bit = 0;
+		
+		
 		while (n-- > 0) {
 			st = new StringTokenizer(br.readLine());
 
 			switch (st.nextToken()) {
 
 			case "add":
-				set.add(st.nextToken());
+				bit |= 1 << Integer.parseInt(st.nextToken())-1;
 				break;
 
 			case "remove":
-				set.remove(st.nextToken());
+				bit &= ~(1 << Integer.parseInt(st.nextToken())-1);
 				break;
 
 			case "check":
-				if (set.contains(st.nextToken()))
+				if ((bit & 1 << Integer.parseInt(st.nextToken())-1) != 0)
 					sb.append("1\n");
-				else
+				else {
 					sb.append("0\n");
+				}
+				
 				break;
 
 			case "toggle":
-				String s = st.nextToken();
-				if (set.contains(s))
-					set.remove(s);
-				else
-					set.add(s);
+				bit ^= 1 << Integer.parseInt(st.nextToken())-1; 
 				break;
 
 			case "all":
-				for(int i = 1; i <= 20; i++)
-					set.add(String.valueOf(i));
+				bit |= 0b1111_1111_1111_1111_1111;
 				break;
 
 			case "empty":
-				set.clear();
+				bit &= 0;
 				break;
 			}
 
