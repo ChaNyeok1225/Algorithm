@@ -11,24 +11,16 @@ public class Main {
 
 		int n = Integer.parseInt(br.readLine());
 		
-		int[] nums = new int[n];
+		int max = -1000;
+		int sum = 0;
 		
 		st= new StringTokenizer(br.readLine());
-		for(int i = 0; i < n; i++) 
-			nums[i] = Integer.parseInt(st.nextToken());
-		
-		int max = -1000;
-		
-		int sum = 0;
 		for(int i = 0; i < n; i++) {
-			sum += nums[i];
-			
+			sum += Integer.parseInt(st.nextToken());
 			if(max < sum)
 				max = sum;
-			
 			if(sum < 0)
 				sum = 0;
-			
 		}
 		
 		System.out.println(max);
