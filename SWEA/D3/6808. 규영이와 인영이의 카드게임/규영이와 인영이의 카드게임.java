@@ -6,59 +6,84 @@ class Solution {
 	static StringBuilder sb = new StringBuilder();
 	static StringTokenizer st;
 
-	static int[] gyu = new int[9];
-	static int[] in = new int[9];
-	static int gw, iw;
+	
 
 	public static void main(String[] args) throws IOException {
 
 		int T = Integer.parseInt(br.readLine());
 
+		int[] gyu = new int[9];
+		int[] in = new int[9];
+		int gw, iw, gs, is, idx;
+		
 		for (int tc = 1; tc < T + 1; tc++) {
 
-			int flag = 0;
 			gw = iw = 0;
+			boolean[] nums = new boolean[19];
 
 			st = new StringTokenizer(br.readLine());
 			for (int i = 0; i < 9; i++) {
 				gyu[i] = Integer.parseInt(st.nextToken());
-				flag |= 1 << gyu[i];
+				nums[gyu[i]] = true;
 			}
 
-			func(0, flag);
-			
-			System.out.printf("#%d %d %d\n",tc, gw, iw);
-			
-			
+			idx = 0;
+			for (int i = 1; i < 19; i++)
+				if (!nums[i])
+					in[idx++] = i;
+
+			do {
+				gs = is = 0;
+				
+				for(int i = 0; i < 9; i++) {
+					if(gyu[i] > in[i])
+						gs += gyu[i] + in[i];
+					else if(gyu[i] < in[i])
+						is += gyu[i] + in[i];
+				}
+				
+				if(gs > is)
+					gw++;
+				else if(gs < is)
+					iw++;
+				
+			} while (np(in));
+
+			System.out.printf("#%d %d %d\n", tc, gw, iw);
 		}
 	}
 
-	static void func(int cnt, int flag) {
+	private static boolean np(int[] in) {
 
-		if (cnt == 9) {
-			int gs = 0, is = 0;
-			
-			for(int i = 0; i < 9; i++) {
-				if(gyu[i] > in[i])
-					gs += gyu[i] + in[i];
-				else if( gyu[i] < in[i])
-					is += gyu[i] + in[i];
-			}
-			
-			if(gs > is)
-				gw++;
-			else if(gs < is)
-				iw++;
-			
-			return;
+		int i = in.length - 1;
+		
+		while(i > 0 && in[i-1] >= in[i])
+			i--;
+		
+		if(i==0)
+			return false;
+		
+		int j = in.length-1;
+		
+		while(in[i-1] >= in[j])
+			j--;
+		
+		int tmp = in[i-1];
+		in[i-1] = in[j];
+		in[j] = tmp;
+		
+		int k = in.length-1;
+		
+		while(i < k) {
+			tmp = in[i];
+			in[i] = in[k];
+			in[k] = tmp;
+			i++; k--;
 		}
-
-		for (int i = 1; i < 19; i++) {
-			if((flag & 1 << i) != 0) continue;
-			in[cnt] = i;
-			func(cnt + 1, flag | 1 << i);
-		}
-
+		
+		return true;
 	}
 
+	
+	
 }
