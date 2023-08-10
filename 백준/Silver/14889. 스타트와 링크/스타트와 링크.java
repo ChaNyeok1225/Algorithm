@@ -1,60 +1,85 @@
 import java.io.*;
 import java.util.*;
 
-public class Main {
-
+class Main {
 	static BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
 	static StringBuilder sb = new StringBuilder();
-	
 	static StringTokenizer st;
 
 	static int n;
-	static boolean[] team;
+	static boolean[] group;
 	static int[][] stat;
-	
-	static int bal = 9999999;
-	
-	public static void main(String[] args) throws IOException {
-		n = Integer.parseInt(br.readLine());
-		
-		team = new boolean[n + 1];
-		stat = new int[n + 1][n + 1];
 
-		for (int i = 1; i < n + 1; i++) {
+	static int bal;
+
+	public static void main(String[] args) throws IOException {
+
+		n = Integer.parseInt(br.readLine());
+
+		group = new boolean[n + 1];
+		stat = new int[n + 1][n + 1];
+		bal = Integer.MAX_VALUE;
+
+		for (int i = 0; i < n; i++) {
 			st = new StringTokenizer(br.readLine());
-			for (int j = 1; j < n + 1; j++)
+			for (int j = 0; j < n; j++)
 				stat[i][j] = Integer.parseInt(st.nextToken());
 		}
 
-		func(0, 1, n / 2);
-		System.out.println(bal);
-	}
-	
-	static void func(int cnt, int idx, int end) {
-		if(cnt == n/2) {
-			int start = 0;
-			int link = 0;
-			for(int i = 1; i < n + 1; i++) {
-				for(int j = i; j < n + 1; j++) {
-					if(team[i] == team[j]) {
-						if(team[i]) start += stat[i][j] + stat[j][i];
-						else link += stat[i][j] + stat[j][i];
-					}
+		int[] ing = new int[n];
+		int[] group = new int[2];
+		Arrays.fill(ing, n / 2, n, 1);
+
+		do {
+			group[0] = group[1] = 0;
+			for (int i = 0; i < n; i++) {
+
+				for (int j = i + 1; j < n; j++) {
+
+					if (ing[i] == ing[j])
+						group[ing[i]] += stat[i][j] + stat[j][i];
 				}
 			}
-			
-			int b = Math.abs(start - link);
-			if(b < bal)
-				bal = b;
-			
-			return;
+
+			if (Math.abs(group[0] - group[1]) < bal)
+				bal = Math.abs(group[0] - group[1]);
+		} while (np(ing));
+
+		System.out.println(bal);
+
+	}
+
+	public static boolean np(int[] p) {
+
+		int i = p.length - 1;
+
+		while (i > 1 && p[i - 1] >= p[i]) // 팀 A, B의 경우의 수는 대칭이니 0까지 할 필요가 없음
+			i--;
+
+		if (i == 1)
+			return false;
+
+		int j = p.length - 1;
+
+		while (p[i - 1] >= p[j])
+			j--;
+
+		int temp = p[j];
+		p[j] = p[i - 1];
+		p[i - 1] = temp;
+
+		int k = p.length - 1;
+
+		while (i < k) {
+			temp = p[i];
+			p[i] = p[k];
+			p[k] = temp;
+			i++;
+			k--;
 		}
-		
-		for(int i = idx; i < end; i++) {
-			team[i] = true;
-			func(cnt+1, i+1, n + 1);
-			team[i] = false;
-		}
+
+		return true;
+
 	}
 
 }
