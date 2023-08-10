@@ -24,43 +24,66 @@ class Solution {
 			taste = new int[n + 1][n + 1];
 			bal = Integer.MAX_VALUE;
 
-			for (int i = 1; i < n + 1; i++) {
+			for (int i = 0; i < n; i++) {
 				st = new StringTokenizer(br.readLine());
-				for (int j = 1; j < n + 1; j++)
+				for (int j = 0; j < n; j++)
 					taste[i][j] = Integer.parseInt(st.nextToken());
 			}
 
-			func(0, 1, n / 2);
+			int[] ing = new int[n];
+			int[] group = new int[2];
+			Arrays.fill(ing, n / 2, n, 1);
+
+
+			do {
+				group[0] = group[1] = 0;
+				for(int i = 0; i < n; i++) {
+					
+					for(int j = i+1; j < n; j++) {
+						
+						if(ing[i] == ing[j])
+							group[ing[i]] += taste[i][j] + taste[j][i];
+					}
+				}
+				
+				if(Math.abs(group[0]-group[1]) < bal)
+					bal = Math.abs(group[0]-group[1]);
+			} while (np(ing));
+
 			System.out.printf("#%d %d\n",tc,bal);
 		}
 	}
 
-	static void func(int cnt, int idx, int end) {
-		if (cnt == n / 2) {
-			int A = 0;
-			int B = 0;
-			for (int i = 1; i < n + 1; i++) {
-				for (int j = i; j < n + 1; j++) {
-					if (group[i] == group[j]) {
-						if (group[i])
-							A += taste[i][j] + taste[j][i];
-						else
-							B += taste[i][j] + taste[j][i];
-					}
-				}
-			}
+	public static boolean np(int[] p) {
 
-			int b = Math.abs(A - B);
-			if (b < bal)
-				bal = b;
+		int i = p.length - 1;
 
-			return;
+		while (i > 1 && p[i-1] >= p[i]) // 팀 A, B의 경우의 수는 대칭이니 0까지 할 필요가 없음
+			i--;
+
+		if (i == 1)
+			return false;
+
+		int j = p.length - 1;
+		
+		while(p[i-1] >= p[j]) j--;
+		
+		int temp = p[j];
+		p[j] = p[i-1];
+		p[i-1] = temp;
+		
+		
+		int k = p.length - 1;
+		
+		while(i < k) {
+			temp = p[i];
+			p[i] = p[k];
+			p[k] = temp;
+			i++; k--;
 		}
+		
+		return true;
 
-		for (int i = idx; i < end; i++) {
-			group[i] = true;
-			func(cnt + 1, i + 1, n + 1);
-			group[i] = false;
-		}
 	}
+
 }
