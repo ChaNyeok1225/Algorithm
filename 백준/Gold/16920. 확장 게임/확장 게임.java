@@ -54,7 +54,7 @@ class Main {
 					cnt++;
 					continue;
 				}
-
+				
 				while (!playerPoint[i].isEmpty()) {
 					q.offer(playerPoint[i].poll());
 				}
@@ -71,10 +71,11 @@ class Main {
 						if (board[nx][ny] != '.')
 							continue;
 
-						if(board[nx][ny] == '.') {
-							playerPoint[i].offer(new int[] { nx, ny, 0 });
+						if(board[nx][ny] == '.')
 							getCastle[i]++;
-						}
+						
+						if(point[2] == playerMove[i] - 1) 
+							playerPoint[i].offer(new int[] { nx, ny, 0 });
 							
 						board[nx][ny] = board[point[0]][point[1]];
 						if (point[2] < playerMove[i] - 1)
