@@ -31,27 +31,18 @@ public class Main {
 
 		Queue<Integer> q = new ArrayDeque<Integer>();
 		for (int i = 1; i < n + 1; i++)
-			if (indegree[i] == 0) {
+			if (indegree[i] == 0)
 				q.offer(i);
-				stand[i] = true;
-			}
 
 		while (!q.isEmpty()) {
 			int num = q.poll();
 			sb.append(num + " ");
 
 			if (rel[num] != null) {
-				for (int x : rel[num])
+				for (int x : rel[num]) {
 					indegree[x]--;
-				
-				
-				for (int i = 1; i < n + 1; i++) {
-					if (stand[i])
-						continue;
-					if (indegree[i] == 0) {
-						q.offer(i);
-						stand[i] = true;
-					}
+					if(indegree[x] == 0)
+						q.offer(x);
 				}
 			}
 
