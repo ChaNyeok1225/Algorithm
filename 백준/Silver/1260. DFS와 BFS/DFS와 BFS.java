@@ -38,22 +38,7 @@ public class Main {
 			if(graph[i] != null)
 				Collections.sort(graph[i]);
 		
-		Stack<Integer> stack = new Stack<>();
-		stack.add(v);
-		
-		while(!stack.isEmpty()) {
-			int cv = stack.pop();
-			
-			if(visDfs[cv]) continue;
-			
-			visDfs[cv] = true;
-			sb.append(cv + " ");
-			
-			if(graph[cv] != null) {
-				for(int i = graph[cv].size()-1; i >= 0; i--)
-					stack.add(graph[cv].get(i));
-			}
-		}
+		dfs(v, visDfs, graph);
 		
 		sb.append("\n");
 		
@@ -73,11 +58,20 @@ public class Main {
 				}
 			
 		}
-		
-		
 		System.out.println(sb);
-		
 
+	}
+	
+	static void dfs(int v, boolean[] visDfs, ArrayList<Integer>[] graph) {
+		visDfs[v] = true;
+		sb.append(v + " ");
+		
+		if(graph[v] != null)
+			for(int nv : graph[v]) {
+				if(visDfs[nv]) continue;
+				dfs(nv, visDfs, graph);
+			}
+		
 	}
 
 }
