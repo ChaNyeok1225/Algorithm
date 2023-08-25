@@ -1,12 +1,14 @@
 import java.io.*;
 import java.util.*;
 
+
+// SWEA 1767 - 프로세서 연결하기
 class Solution {
 	static BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
 	static StringBuilder sb = new StringBuilder();
 	static StringTokenizer st;
 
-	static int[][] board;
+	static int[][] board; 
 	static ArrayList<int[]> processor;
 	static int size, min, n, maxconnect;
 
@@ -14,71 +16,64 @@ class Solution {
 
 	public static void main(String[] args) throws IOException {
 
-		int T = Integer.parseInt(br.readLine());
+		int T = Integer.parseInt(br.readLine()); // Testcase 횟수 입력
+		for (int tc = 1; tc < T + 1; tc++) { // Testcase 만큼 반복
 
-		for (int tc = 1; tc < T + 1; tc++) {
+			n = Integer.parseInt(br.readLine()); // 이차원 배열 크기
 
-			n = Integer.parseInt(br.readLine());
+			board = new int[n][n]; // 배열 생성
+			processor = new ArrayList<>(); // 코어 위치를 담을 ArrayList
 
-			board = new int[n][n];
-			processor = new ArrayList<>();
-
-			for (int i = 0; i < n; i++) {
+			for (int i = 0; i < n; i++) { // 배열 입력
 				st = new StringTokenizer(br.readLine());
 				for (int j = 0; j < n; j++) {
 					board[i][j] = Integer.parseInt(st.nextToken());
-					if (board[i][j] == 1 && i != 0 && i != n - 1 && j != 0 && j != n - 1)
+					if (board[i][j] == 1 && i != 0 && i != n - 1 && j != 0 && j != n - 1) //가장자리 코어라면 등록안함
 						processor.add(new int[] { i, j });
 				}
 			}
-			size = processor.size();
-			min = Integer.MAX_VALUE;
-			maxconnect = -1;
-			dfs(0, 0, 0);
+			size = processor.size(); // 수행해야하는 프로세서의 개수
+			min = Integer.MAX_VALUE; // min 값 초기화
+			maxconnect = -1;         // 연결 개수 초기화
+			dfs(0, 0, 0); // 프로세서 인덱스, 전선의 길이, 연결된 코어
 
-			System.out.printf("#%d %d\n", tc, min);
+			System.out.printf("#%d %d\n", tc, min); // 출력
 		}
 	}
 
-	private static void dfs(int idx, int sum, int connect) {
-//		System.out.println(idx + "--- sum : " + sum);
-//		for(int i = 0; i < n; i++)
-//			System.out.println(Arrays.toString(board[i]));
-//		System.out.println();
+	private static void dfs(int idx, int sum, int connect) { // 한가지 코어마다 5가지 동작 (상하좌우연결, 또는 연결 안함)
 
-		if (maxconnect < connect) {
+		if (maxconnect < connect) { // 현재 저장해둔 연결 코어보다 연결된 개수가 많다면 값 변경 
 			maxconnect = connect;
 			min = sum;
 		}
-		if (maxconnect == connect && min > sum)
+		if (maxconnect == connect && min > sum) // 연결 개수는 같지만 전선의 길이가 작다면 값 변경
 			min = sum;
 
-		if (idx == size) 
+		if (idx == size)  // 모든 코어를 확인했다면 return
 			return;
 
-		int[] p = processor.get(idx);
-		int nx = p[0], ny = p[1], cnt = 0;
-		boolean flag = false;
-		boolean conchk = true;
+		int[] p = processor.get(idx); // 수행할 코어의 위치
+		int nx = p[0], ny = p[1], cnt = 0; 
+		boolean flag = false; // 코어 활성화 체크 flag
 		for (int dir = 0; dir < 4; dir++) {
-			flag = false;
+			flag = false; // 값 초기화
 			cnt = 0;
 			nx = p[0];
 			ny = p[1];
-			while (true) { // 본인 영역으로 칠하기
+			while (true) { // 전선 새기는 작업
 				nx += dx[dir];
 				ny += dy[dir];
 
 				if (nx < 0 || ny < 0 || n <= nx || n <= ny) { // 전기에 닿았다면 flag = true 하고 break
 					flag = true;
-					conchk = false;
 					break;
 				}
-				if (board[nx][ny] != 0)
+				if (board[nx][ny] != 0) // 전기에 닿지 못헀다면 break
 					break;
 
-				board[nx][ny] = idx + 2;
-				cnt++;
+				board[nx][ny] = idx + 2; // 전선을 idx + 2로 board에 저장
+				cnt++; // 길이 증가
 			}
 
 			if (flag) // 전기에 닿았다면 다음 단계로
@@ -93,13 +88,13 @@ class Solution {
 				if (nx < 0 || ny < 0 || n <= nx || n <= ny)
 					break;
 
-				if (board[nx][ny] == idx + 2) {
+				if (board[nx][ny] == idx + 2) { // board가 idx+2라면 0으로
 					board[nx][ny] = 0;
 				} else
 					break;
 			}
 		}
-		dfs(idx+1, sum, connect);
+		dfs(idx+1, sum, connect); // 연결하지 않고 다음 단계로
 	}
 
 }
