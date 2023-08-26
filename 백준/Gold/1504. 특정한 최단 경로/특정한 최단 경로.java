@@ -67,38 +67,11 @@ public class Main {
 			}
 		}
 		
-		int[][] D = new int[2][3];
+		long val1 = (long)minEdge[0][path[1]] + minEdge[1][path[2]] + minEdge[2][n];
+		long val2 = (long)minEdge[0][path[2]] + minEdge[2][path[1]] + minEdge[1][n];
 		
-		for(int i = 0; i < 3; i++)
-			D[0][i] = minEdge[i][path[i+1]];
-		D[1][0] = minEdge[0][path[2]];
-		D[1][1] = minEdge[2][path[1]];
-		D[1][2] = minEdge[1][path[3]];
-		
-//		for(int i = 0; i < 2; i++)
-//			System.out.println(Arrays.toString(D[i]));
-		
-		int val1 = 0;
-		for(int i = 0; i < 3; i++) {
-			if(D[0][i] == Integer.MAX_VALUE) {
-				val1 = Integer.MAX_VALUE;
-				break;
-			}
-			val1 += D[0][i];
-		}
-		int val2 = 0;
-		for(int i = 0; i < 3; i++) {
-			if(D[1][i] == Integer.MAX_VALUE) {
-				val2 = Integer.MAX_VALUE;
-				break;
-			}
-			val2 += D[1][i];
-		}
-		
-//		System.out.println(val1 +" "+ val2);
-		
-		int res = Math.min(val1,val2);
-		if(res == Integer.MAX_VALUE)
+		long res = Math.min(val1, val2);
+		if(res >= Integer.MAX_VALUE)
 			res = -1;
 		
 		System.out.println(res);
