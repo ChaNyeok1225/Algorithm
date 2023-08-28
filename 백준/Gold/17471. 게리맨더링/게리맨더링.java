@@ -7,7 +7,6 @@ public class Main {
 	static StringTokenizer st;
 
 	static int[] state, group, vis;
-	static boolean[] chk;
 	static int n, ans = Integer.MAX_VALUE;
 	static ArrayList<Integer>[] graph;
 	static Queue<Integer> q = new ArrayDeque<Integer>();
@@ -19,7 +18,6 @@ public class Main {
 		state = new int[n + 1];
 		group = new int[n + 1];
 		vis = new int[n + 1];
-		chk = new boolean[n + 1];
 		graph = new ArrayList[n + 1];
 		for (int i = 1; i < n + 1; i++)
 			graph[i] = new ArrayList<>();
@@ -76,11 +74,14 @@ public class Main {
 
 	private static boolean chkAdj() {
 		Arrays.fill(vis, 0);
-		Arrays.fill(chk, false);
-
+        int cnt = 0;
 		for (int i = 1; i < n + 1; i++) {
 			if (vis[i] != 0)
 				continue;
+            if(cnt > 1)
+                return false;
+            
+            cnt++;
 			vis[i] = i;
 			q.offer(i);
 			int team = group[i];
@@ -98,19 +99,8 @@ public class Main {
 		
 //		System.out.println("group : " + Arrays.toString(group));
 //		System.out.println(Arrays.toString(vis));
-
-		int cnt = 0;
-		for (int i = 1; i < n + 1; i++) {
-			if(!chk[vis[i]]) {
-				chk[vis[i]] = true;
-				cnt++;
-			}
-		}
-
-		if(cnt==2)
-			return true;
-		else
-			return false;
+        
+        return true;
 	}
 
 }
