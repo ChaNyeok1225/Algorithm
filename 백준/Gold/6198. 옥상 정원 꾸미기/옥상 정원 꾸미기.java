@@ -1,46 +1,27 @@
-import java.util.*;
 import java.io.*;
+import java.util.*;
 
 public class Main {
 
-	public static void main(String[] args) throws IOException {
-
+	public static void main(String[] args) throws Exception {
 		BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
-		StringBuilder sb = new StringBuilder();
-		StringTokenizer st;
-		////////////////////// 구현부/////////////////////////
-
+		
 		int n = Integer.parseInt(br.readLine());
 		
 		Stack<Integer> stack = new Stack<>();
-		long sum = 0;
-		int cnt = 0, height;
+		
+		long ans = 0;
 		for(int i = 0; i < n; i++) {
-			height = Integer.parseInt(br.readLine());
-			cnt = 0;
-			while(!(stack.isEmpty()) && stack.peek() <= height) {
+			int h = Integer.parseInt(br.readLine());
+			while(!stack.isEmpty() && stack.peek() <= h) {
 				stack.pop();
-				sum += cnt;
-				cnt++;
 			}
+			ans += stack.size();
+			stack.add(h);
 			
-			if(!(stack.isEmpty())) {
-				sum += cnt * stack.size();
-			}
-			stack.add(height);
 		}
+		System.out.println(ans);
 		
-		cnt = 0;
-		while(!(stack.isEmpty())) {
-			stack.pop();
-			sum += cnt;
-			cnt++;
-		}
-		
-		System.out.println(sum);
-
-		////////////////////////////////////////////////////
-		br.close();
 	}
 
 }
