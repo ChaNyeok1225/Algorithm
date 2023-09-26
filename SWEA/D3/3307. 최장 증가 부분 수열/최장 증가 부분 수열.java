@@ -16,18 +16,19 @@ public class Solution {
 			
 			int n = Integer.parseInt(br.readLine());
 			ArrayList<Integer> list = new ArrayList<>();
-			
+
 			st = new StringTokenizer(br.readLine());
-			
-			L : for(int i = 0; i < n; i++) {
+
+			for (int i = 0; i < n; i++) {
 				int v = Integer.parseInt(st.nextToken());
-				for(int j = 0; j < list.size(); j++) {
-					if(list.get(j) >= v) {
-						list.set(j, v);
-						continue L;
-					}
+				int r = Collections.binarySearch(list, v);
+
+				if (r < 0) {
+					if (-r > list.size())
+						list.add(v);
+					else
+						list.set(-r - 1, v);
 				}
-				list.add(v);
 			}
 			System.out.printf("#%d %d\n",tc, list.size());
 		}		
