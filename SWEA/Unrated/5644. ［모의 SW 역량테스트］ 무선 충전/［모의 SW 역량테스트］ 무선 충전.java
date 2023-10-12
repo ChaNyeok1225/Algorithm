@@ -3,137 +3,101 @@ import java.util.*;
 
 public class Solution {
 
-	static BufferedReader br = new BufferedReader(new InputStreamReader(System.in)); // 버퍼리더 생성
+	static BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
 	static StringBuilder sb = new StringBuilder();
 	static StringTokenizer st;
 
-	static int[] dx = { 0, -1, 0, 1, 0 }, dy = { 0, 0, 1, 0, -1 };
+	static int[] dx = {0, -1, 0, 1, 0 }, dy = {0, 0, 1, 0, -1 };
+	static int[][] AP;
 
-	public static void main(String[] args) throws IOException {
+	public static void main(String[] args) throws Exception {
 
 		int T = Integer.parseInt(br.readLine());
 
 		for (int tc = 1; tc < T + 1; tc++) {
 			st = new StringTokenizer(br.readLine());
 			int m = Integer.parseInt(st.nextToken());
-			int apcnt = Integer.parseInt(st.nextToken());
+			int a = Integer.parseInt(st.nextToken());
 
-			int[][] move = new int[m + 1][2];
-
-			st = new StringTokenizer(br.readLine());
-			for (int i = 1; i < m + 1; i++)
-				move[i][0] = Integer.parseInt(st.nextToken());
+			int[] mvA = new int[m + 1];
+			int[] mvB = new int[m + 1];
 
 			st = new StringTokenizer(br.readLine());
-			for (int i = 1; i < m + 1; i++)
-				move[i][1] = Integer.parseInt(st.nextToken());
+			for (int i = 0; i < m; i++)
+				mvA[i] = Integer.parseInt(st.nextToken());
+			st = new StringTokenizer(br.readLine());
+			for (int i = 0; i < m; i++)
+				mvB[i] = Integer.parseInt(st.nextToken());
 
-			int[][] AP = new int[apcnt][4];
+			AP = new int[a][4];
 
-			for (int i = 0; i < apcnt; i++) {
+			for (int i = 0; i < a; i++) {
 				st = new StringTokenizer(br.readLine());
-				for (int j = 0; j < 4; j++)
-					AP[i][j] = Integer.parseInt(st.nextToken());
+				AP[i][1] = Integer.parseInt(st.nextToken());
+				AP[i][0] = Integer.parseInt(st.nextToken());
+				AP[i][2] = Integer.parseInt(st.nextToken());
+				AP[i][3] = Integer.parseInt(st.nextToken());
 			}
 
-			int[][][] board = new int[apcnt][11][11];
-			Arrays.sort(AP, (int[] a1, int[] a2) -> {
-				return a2[3] - a1[3];
-			});
+			Arrays.sort(AP, (o1, o2) -> o2[3] - o1[3]);
 
-			Queue<int[]> q = new ArrayDeque<int[]>();
+			int[] A = { 1, 1 }, B = { 10, 10 };
 
-//			for (int i = 0; i < apcnt; i++)
-//				System.out.println(Arrays.toString(AP[i]));
+			int ans = 0;
+			for (int i = 0; i <= m; i++) {
+				List<Integer> aap = new ArrayList<Integer>();
+				List<Integer> bap = new ArrayList<Integer>();
 
-			for (int i = 0; i < apcnt; i++) {
-
-				q.offer(new int[] { AP[i][1], AP[i][0] });
-				board[i][AP[i][1]][AP[i][0]] = 1;
-
-				while (!q.isEmpty()) {
-					int[] p = q.poll();
-
-					if (board[i][p[0]][p[1]] > AP[i][2])
-						continue;
-
-					for (int dir = 1; dir < 5; dir++) {
-						int nx = p[0] + dx[dir];
-						int ny = p[1] + dy[dir];
-
-						if (nx < 1 || ny < 1 || 10 < nx || 10 < ny)
-							continue;
-						if (board[i][nx][ny] > 0)
-							continue;
-
-						board[i][nx][ny] = board[i][p[0]][p[1]] + 1;
-						q.offer(new int[] { nx, ny });
-					}
+				for (int j = 0; j < a; j++) {
+					if (getD(A[0], A[1], AP[j][0], AP[j][1]) <= AP[j][2])
+						aap.add(j);
+					if (getD(B[0], B[1], AP[j][0], AP[j][1]) <= AP[j][2])
+						bap.add(j);
 				}
+
+				ans += charge(aap, bap);
+				
+				A[0] += dx[mvA[i]];
+				A[1] += dy[mvA[i]];
+				B[0] += dx[mvB[i]];
+				B[1] += dy[mvB[i]];
 			}
-
-//			for (int i = 0; i < apcnt; i++) {
-//				for (int j = 1; j < 11; j++)
-//					System.out.println(Arrays.toString(board[i][j]));
-//				System.out.println();
-//			}
-
-			int[] a = { 1, 1 };
-			int[] b = { 10, 10 };
-
-			int sec = 0, sum = 0;
-			boolean[][] visap = new boolean[2][apcnt];
-
-			while (true) {
-
-				for (int p = 0; p < 2; p++)
-					for (int i = 0; i < apcnt; i++)
-						visap[p][i] = false;
-
-				for (int i = 0; i < apcnt; i++) {
-					if (board[i][a[0]][a[1]] > 0)
-						visap[0][i] = true;
-				}
-				for (int i = 0; i < apcnt; i++) {
-					if (board[i][b[0]][b[1]] > 0)
-						visap[1][i] = true;
-				}
-
-				int cn = 0;
-				boolean aflag = true, bflag = true;
-				for (int i = 0; i < apcnt && cn < 2; i++) {
-					if (visap[0][i] && visap[1][i]) {
-						sum += AP[i][3];
-						cn++;
-					}else if ((visap[0][i] && !visap[1][i]) && aflag) {
-						sum+=AP[i][3];
-						aflag = false;
-						cn++;
-					}else if((!visap[0][i] && visap[1][i])&& bflag) {
-						sum+=AP[i][3];
-						bflag = false;
-						cn++;
-					}
-				}
-
-//				System.out.println(
-//						sec + ":: a (" + a[0] + ", " + a[1] + "), b (" + b[0] + ", " + b[1] + ")" + " sum : " + sum);
-//				System.out.println(Arrays.toString(visap[0]) + ", " + Arrays.toString(visap[1]));
-//				System.out.println();
-				sec++;
-
-				if (sec > m)
-					break;
-
-				a[0] += dx[move[sec][0]];
-				a[1] += dy[move[sec][0]];
-				b[0] += dx[move[sec][1]];
-				b[1] += dy[move[sec][1]];
-
-			}
-			System.out.printf("#%d %d\n", tc, sum);
+			
+			sb.append(String.format("#%d %d\n", tc,ans));
 
 		}
+		System.out.print(sb);
 
 	}
+
+	static int charge(List<Integer> aap, List<Integer> bap) {
+
+		if (aap.size() == 0 && bap.size() == 0)
+			return 0;
+
+		if (bap.size() == 0)
+			return AP[aap.get(0)][3];
+
+		if (aap.size() == 0)
+			return AP[bap.get(0)][3];
+
+		int sum = 0;
+
+		for (int i : aap) {
+			for (int j : bap) {
+				if (i == j)
+					sum = sum > AP[i][3] ? sum : AP[i][3];
+				else {
+					sum = sum > AP[i][3] + AP[j][3] ? sum : AP[i][3] + AP[j][3];
+				}
+			}
+		}
+
+		return sum;
+	}
+
+	static int getD(int sx, int sy, int ex, int ey) {
+		return Math.abs(sx - ex) + Math.abs(sy - ey);
+	}
+
 }
