@@ -34,10 +34,8 @@ class Solution {
             map.get(tickets[i][0]).add(new Ticket(tickets[i][1], i));
         }
         
-        for(String key : map.keySet()) {
+        for(String key : map.keySet()) 
             Collections.sort(map.get(key), (a, b) -> a.to.compareTo(b.to));
-            // System.out.println(key + ", " + map.get(key));
-        }
         
         path[0] = "ICN";
         dfs(0, "ICN");
@@ -46,8 +44,6 @@ class Solution {
     }
     
     static void dfs(int cnt, String name) {
-        // System.out.println(cnt + " :: " + name);
-
         if(cnt == len) {
             flag = true;
             return;
@@ -60,14 +56,7 @@ class Solution {
             path[cnt+1] = t.to;
             dfs(cnt+1, t.to);
             
-            
             use[t.idx] = false;
-            
         }
-        
-        
-        
     }
-    
-    
 }
