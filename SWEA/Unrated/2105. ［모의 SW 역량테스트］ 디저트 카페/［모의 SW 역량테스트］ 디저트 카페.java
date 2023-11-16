@@ -1,68 +1,68 @@
 import java.io.*;
 import java.util.*;
 
-class Solution {
+// 1:55
+
+public class Solution {
 
 	static int[][] board;
-	static boolean[] dessert = new boolean[101];
-	static int max, n;
-	static int[] dx = { 1, -1, -1, 1 }, dy = { 1, 1, -1, -1 };
+	static boolean[] vis;
+	static int[] dx = { 1, 1, -1, -1, 0 }, dy = { 1, -1, -1, 1, 0 };
+	static int sx, sy, ans, n;
 
 	public static void main(String[] args) throws IOException {
 
 		BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
 		StringTokenizer st;
 
-		int T = Integer.parseInt(br.readLine());
+		int T = Integer.parseInt(br.readLine().trim());
 
 		for (int tc = 1; tc < T + 1; tc++) {
-
-			st = new StringTokenizer(br.readLine());
-			n = Integer.parseInt(st.nextToken());
-
+			n = Integer.parseInt(br.readLine().trim());
 			board = new int[n][n];
-			Arrays.fill(dessert, false);
-			max = 0;
+			vis = new boolean[101];
+			ans = -1;
 			for (int i = 0; i < n; i++) {
 				st = new StringTokenizer(br.readLine());
-				for (int j = 0; j < n; j++)
+				for (int j = 0; j < n; j++) {
 					board[i][j] = Integer.parseInt(st.nextToken());
+				}
 			}
 
-			for (int i = 1; i < n-1; i++)
-				for (int j = 0; j < n-2; j++) {
-					dessert[board[i][j]] = true;
-					dfs(i, j, 0, 1, i, j);
-					dessert[board[i][j]] = false;
+			for (int i = 0; i < n - 2; i++) {
+				for (int j = 1; j < n - 1; j++) {
+					sx = i;
+					sy = j;
+					dfs(i, j, 0, 0);
 				}
+			}
 			
-			if(max == 0) max = -1;
-			System.out.printf("#%d %d\n",tc, max);
+			
+			System.out.println("#"+tc+" "+ans);
 		}
 
 	}
 
-	static void dfs(int x, int y, int dir, int cnt, int sx, int sy) {
-//		System.out.println(x + ", " + y);
-		
-		if(dir == 4)
+	static void dfs(int x, int y, int cnt, int dir) {
+		if (dir > 3)
 			return;
-		
-		int nx = x + dx[dir];
-		int ny = y + dy[dir];
-		
-		if(nx == sx && ny == sy && cnt > 2) {
-			if(max < cnt)
-				max = cnt;
+
+		if (x == sx && y == sy && cnt > 1) {
+			ans = ans > cnt ? ans : cnt;
 			return;
 		}
-		if(nx < 0 || ny < 0 || n <= nx || n <= ny)
+
+		if (x < 0 || y < 0 || n <= x || n <= y || vis[board[x][y]])
 			return;
-		if(dessert[board[nx][ny]]) return;
 		
-		dessert[board[nx][ny]] = true;
-		dfs(nx,ny, dir+1, cnt+1, sx,sy);
-		dfs(nx,ny,dir,cnt+1,sx,sy);
-		dessert[board[nx][ny]] = false;
+		
+		vis[board[x][y]] = true;
+
+		dfs(x + dx[dir], y + dy[dir], cnt + 1, dir);
+		dfs(x + dx[dir + 1], y + dy[dir + 1], cnt + 1, dir + 1);
+
+		vis[board[x][y]] = false;
+
 	}
+
 }
