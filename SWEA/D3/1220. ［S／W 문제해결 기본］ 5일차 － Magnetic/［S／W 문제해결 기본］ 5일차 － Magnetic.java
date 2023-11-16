@@ -1,43 +1,48 @@
 import java.io.*;
 import java.util.*;
 
-class Solution {
-	static BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
-	static StringBuilder sb = new StringBuilder();
-	static StringTokenizer st;
+
+// 3 : 25
+
+public class Solution {
+	
 
 	public static void main(String[] args) throws IOException {
 
+		BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
+		StringTokenizer st;
+
 		for(int tc = 1; tc < 11; tc++) {
-			int n = Integer.parseInt(br.readLine());
 			
-			int[][] board = new int[100][100];
+			int n = Integer.parseInt(br.readLine().trim());
+			
+			int[][] board = new int[n][n];
 			
 			for(int i = 0; i < n; i++) {
-				st=  new StringTokenizer(br.readLine());
-				for(int j = 0; j < n; j++)
+				st = new StringTokenizer(br.readLine().trim());
+				for(int j = 0; j < n; j++) {
 					board[i][j] = Integer.parseInt(st.nextToken());
+				}
 			}
 			
-			int sum = 0;
-			
-			for(int i = 0; i < n ; i++) {
-				boolean flag = false;
-				for(int j = 0; j < n; j++) {
-					if(board[j][i] == 1)
-						flag = true;
-					else if(board[j][i] == 2 && flag) {
-						sum++;
-						flag = false;
+			int cnt = 0;
+			for(int c = 0; c < n; c++) {
+				boolean state = false;
+				for(int r = 0; r < n; r++) {
+					if(board[r][c] == 1) {
+						state = true;
+					} else if(board[r][c] == 2 && state) {
+						cnt++;
+						state = false;
 					}
 				}
 			}
 			
-			
-			System.out.printf("#%d %d\n",tc,sum);
+			System.out.println("#"+tc+" "+cnt);
 			
 		}
 		
 	}
+
 
 }
