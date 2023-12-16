@@ -26,9 +26,10 @@ public class Main {
 
 		int[][] D = new int[totalsize + 1][n + 1];
 		int res = 0;
-		L : for (int i = 1; i < totalsize + 1; i++) {
+		L : for (int i = 0; i < totalsize + 1; i++) {
 			for (int j = 1; j < n+1; j++) {
-				D[i][j] = Math.max(D[i - 1][j], D[i][j - 1]);
+				if(i > 0)
+					D[i][j] = Math.max(D[i - 1][j], D[i][j - 1]);
 				if (i >= app[j][1]) {
 					D[i][j] = Math.max(D[i][j], D[i-app[j][1]][j-1] + app[j][0]);
 				}
