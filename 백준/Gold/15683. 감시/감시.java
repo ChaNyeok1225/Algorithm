@@ -1,139 +1,158 @@
-import java.io.*;
-import java.util.*;
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.io.InputStreamReader;
+import java.util.ArrayList;
+import java.util.StringTokenizer;
 
 public class Main {
-	static BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
-	static StringBuilder sb = new StringBuilder();
-	static StringTokenizer st;
 
-	static int n;
-	static int m;
+    static int n,m,ans= Integer.MAX_VALUE;
+    static int[][] map;
+    static ArrayList<int[]> list;
+    static int[] dx= {-1, 0, 1, 0}; //상우하좌
+    static int[] dy= {0, 1, 0, -1};
 
-	static int[][] board = new int[10][10];
-	static int[][] copy = new int[10][10];
+    public static void main(String[] args) throws IOException {
 
-	static List<int[]> cctv = new ArrayList<>();
+        BufferedReader br= new BufferedReader(new InputStreamReader(System.in));
+        StringTokenizer st= new StringTokenizer(br.readLine());
 
-	static int[] dx = { 1, 0, -1, 0 };
-	static int[] dy = { 0, 1, 0, -1 };
+        n= Integer.parseInt(st.nextToken());
+        m= Integer.parseInt(st.nextToken());
 
-	public static void main(String[] args) throws IOException {
+        map= new int[n][m];
+        list= new ArrayList<int[]>();
 
-		st = new StringTokenizer(br.readLine());
-		n = Integer.parseInt(st.nextToken());
-		m = Integer.parseInt(st.nextToken());
+        for(int i=0; i<n; i++) {
+            st= new StringTokenizer(br.readLine());
+            for(int j=0; j<m; j++) {
 
-		int num;
-		for (int i = 0; i < n; i++) {
-			st = new StringTokenizer(br.readLine());
-			for (int j = 0; j < m; j++) {
-				num = Integer.parseInt(st.nextToken());
-				board[i][j] = num;
+                map[i][j]= Integer.parseInt(st.nextToken());
+                if(map[i][j] != 0 && map[i][j] != 6) {
+                    list.add(new int[] {i,j,map[i][j]});
+                }
+            }
+        }
 
-				if (num != 0 && num != 6) {
-					cctv.add(new int[] { i, j });
-				}
-			}
-		}
+        //시뮬+조합
+        //list를 돌면서 하나씩 90도씩 돌아본다
+       dfs(0);
 
-		// 몇개의 조합이 있는가?
-		// 1번은 4, 2번은 2, 3번은 4, 4번은 4, 5번은 1의 경우의 수를 가진다.
-		// 1번 cctv가 8개 있다면 4^8의 경우의 수가 될 것.
-		// 하지만 각 cctv마다 경우의 수를 다르게 센다면 예외처리가 복잡해지므로
-		// 모든 cctv의 경우의 수를 4로 생각한다.
+        System.out.print(ans);
 
-		// 조합의 경우의 수 : 4 ^ list.size() # cctv의 갯수
+    }
 
-		// << k 연산은 값을 2^k 해주는 것과 같기 때문에 << 2 * k 는 4^k와 같다
-		int end = 1 << (2 * cctv.size());
 
-		int combt = 0;
-		int dir = 0;
-		int cctvcase = 0;
-		int[] p;
-		int cnt;
-		int min = n*m;
-		for (int comb = 0; comb < end; comb++) {
-			cnt = 0;
-			// board copy
-			for (int i = 0; i < n; i++)
-				for (int j = 0; j < m; j++)
-					copy[i][j] = board[i][j];
+    private static void dfs(int idx) {
 
-			combt = comb;
+        if(idx == list.size()) { // list를 다 돌았으면 사각지대 계산하기
 
-			for (int i = 0; i < cctv.size(); i++) {
-				dir = combt % 4;
-				combt /= 4;
-				p = cctv.get(i);
-				cctvcase = copy[p[0]][p[1]];
+            int cnt= 0;
+            for(int i=0; i<n; i++) {
+                for(int j=0; j<m; j++) {
+                    if(map[i][j] == 0) {
+                        cnt+=1;
+                    }
+                }
+            }
+            
+            ans= Math.min(ans, cnt);
+            return;
+        }
 
-				switch (cctvcase) {
-				case 1:
-					observe(p[0], p[1], dir);
-					break;
+        int cctvNum= list.get(idx)[2]; //현재 맵에서 cctv 넘버
+        int x= list.get(idx)[0];
+        int y= list.get(idx)[1];
+        
+        //지금 있는 경우에 90도를 돌린다
+        for(int i=0; i<4; i++) {
+    
+            if(cctvNum == 1) {
+                //한 방향으로 cctvNum번호로 map에 표시한다
+                lineMap(idx+7, (i+4)%4, x, y);
+                dfs(idx+1);
+                //원상복구
+                lineMap(idx+7, (i+4)%4, x, y);
+            }
 
-				case 2:
-					// 반대 방향 확인
-					observe(p[0], p[1], dir);
-					observe(p[0], p[1], dir + 2);
-					break;
+            if(cctvNum == 2) {
+                //1,3 or 0, 2
+                if(i == 0) {
+                    lineMap(idx+7, 0, x, y);
+                    lineMap(idx+7, 2, x, y);
+                    dfs(idx+1);
+                    lineMap(idx+7, 0, x, y);
+                    lineMap(idx+7, 2, x, y);
+                    
+                }
+                
+                if(i == 1) {
+                    lineMap(idx+7, 1, x, y);
+                    lineMap(idx+7, 3, x, y);
+                    dfs(idx+1);
+                    lineMap(idx+7, 1, x, y);
+                    lineMap(idx+7, 3, x, y);
+                }
+            }
 
-				case 3:
-					// 직각 방향 확인
-					observe(p[0], p[1], dir);
-					observe(p[0], p[1], dir + 1);
-					break;
+            if(cctvNum == 3) {
+                // 0,1 or 1,2 or 2,3 or 3,0
+                
+                    lineMap(idx+7, (i+4)%4, x, y);
+                    lineMap(idx+7, (i+5)%4, x, y);
+                    dfs(idx+1);
+                    lineMap(idx+7, (i+4)%4, x, y);
+                    lineMap(idx+7, (i+5)%4, x, y);
 
-				case 4:
-					// 3 방향 확인
-					observe(p[0], p[1], dir);
-					observe(p[0], p[1], dir + 1);
-					observe(p[0], p[1], dir + 2);
-					break;
+            }
 
-				case 5:
-					observe(p[0], p[1], dir);
-					observe(p[0], p[1], dir + 1);
-					observe(p[0], p[1], dir + 2);
-					observe(p[0], p[1], dir + 3);
-					break;
-				}
-			}
-			
-			for (int i = 0; i < n; i++)
-				for (int j = 0; j < m; j++)
-					if(copy[i][j] == 0)
-						cnt++;
-			
-			if(min > cnt)
-				min = cnt;
-			
-		}
-		
-		
-		System.out.println(min);
-	}
+            if(cctvNum == 4) {
+                 
+                //0,1,2 or 1,2,3 or 0,2,3 or 0,1,3
+                
+                lineMap(idx+7, (i+4)%4, x, y);
+                lineMap(idx+7, (i+5)%4, x, y);
+                lineMap(idx+7, (i+6)%4, x, y);
+                dfs(idx+1);
+                lineMap(idx+7, (i+4)%4, x, y);
+                lineMap(idx+7, (i+5)%4, x, y);
+                lineMap(idx+7, (i+6)%4, x, y);
+                
+            }
 
-	static void observe(int x, int y, int dir) {
-		dir %= 4;
-		int nx = x;
-		int ny = y;
-		while (true) {
-			nx += dx[dir];
-			ny += dy[dir];
+            if(cctvNum == 5) {
+                
+                lineMap(idx+7, 0, x, y);
+                lineMap(idx+7, 1, x, y);
+                lineMap(idx+7, 2, x, y);
+                lineMap(idx+7, 3, x, y);
+                dfs(idx+1);
+                lineMap(idx+7, 0, x, y);
+                lineMap(idx+7, 1, x, y);
+                lineMap(idx+7, 2, x, y);
+                lineMap(idx+7, 3, x, y);
+            }
+        }
+    }
 
-			if (nx < 0 || ny < 0 || n <= nx || m <= ny)
-				break;
 
-			if (copy[nx][ny] == 6)
-				break;
+    private static void lineMap(int idx, int dir, int x, int y) { //벽에 부딪히거나 맵의 끝에 닿을 때까지 dir방향으로 cctvNum을 표시한다.
 
-			if (copy[nx][ny] == 0)
-				copy[nx][ny] = 7; // 입력에서 제시한 0~6까지와는 다른 수
-			else
-				continue; // cctv나 이미 칠한 곳이면 다음 칸 확인.
-		}
-	}
+        int nx= x; int ny= y;
+
+        while(true) {
+            nx= nx+ dx[dir];
+            ny= ny+ dy[dir];
+
+            if(nx<0 || ny<0 || nx>=n || ny>=m) break; 
+            
+            if(map[nx][ny] == 6) break;
+            
+            if(map[nx][ny] == idx)
+            	map[nx][ny] = 0;
+            else if (map[nx][ny] == 0)
+            	map[nx][ny] = idx;
+        }
+    }
 
 }
