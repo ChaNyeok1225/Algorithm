@@ -26,12 +26,10 @@ public class Main {
         }
         
         for(int i = 1; i < m + 1; i++) {
-        	int max = 0;
+        	int max = dp[i] = dp[i-1];
         	int selidx = -1;
         	
-        	dp[i] = dp[i-1];
-        	for(int j = 0; j < n + 1; j++)
-        		use[i][j] = use[i-1][j];
+        	dp[i] = dp[i-1];       	
         	
         	for(int j = 1; j < n + 1; j++) {
         		if(i < obj[j][0]) continue;
@@ -41,14 +39,17 @@ public class Main {
         			selidx = j;
         		}
         	}
-        	
-        	if(selidx != -1 && dp[i] < max) {
-        		for(int j = 1; j < n + 1; j++) {
+ 
+        	if(selidx == -1) {
+        		for(int j = 0; j < n + 1; j++)
+            		use[i][j] = use[i-1][j];
+        	} else {
+        		for(int j = 1; j < n + 1; j++) 
         			use[i][j] = use[i - obj[selidx][0]][j];
-        		}
         		use[i][selidx]++;
         		dp[i] = max;
         	}
+        	
         }
         
         System.out.println(dp[m]);
