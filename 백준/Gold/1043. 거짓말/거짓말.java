@@ -1,78 +1,67 @@
 import java.io.*;
 import java.util.*;
 
-class Main {
-	static BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
-	static StringBuilder sb = new StringBuilder();
-	static StringTokenizer st;
+public class Main {
+    public static void main(String[] args) throws Exception {
 
-	public static void main(String[] args) throws IOException {
+        BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
+        StringBuilder sb = new StringBuilder();
+        StringTokenizer st;
 
-		st = new StringTokenizer(br.readLine());
-		int n = Integer.parseInt(st.nextToken());
-		int m = Integer.parseInt(st.nextToken());
-
-		ArrayList<Integer> truth = new ArrayList<>();
-		boolean[] tp = new boolean[n + 1];
-		st = new StringTokenizer(br.readLine());
-		int k = Integer.parseInt(st.nextToken());
-		for (int i = 0; i < k; i++)
-			truth.add(Integer.parseInt(st.nextToken()));
-
-		ArrayList<Integer>[] party = new ArrayList[m];
-		boolean[][] graph = new boolean[n + 1][n + 1];
-
-		for (int i = 0; i < m; i++) {
-			party[i] = new ArrayList<>();
-
-			st = new StringTokenizer(br.readLine());
-			k = Integer.parseInt(st.nextToken());
-
-			int a = Integer.parseInt(st.nextToken());
-			party[i].add(a);
-			for (int j = 1; j < k; j++) {
-				int b = Integer.parseInt(st.nextToken());
-				party[i].add(b);
-
-				graph[a][b] = true;
-				graph[b][a] = true;
-				a = b;
-			}
-		}
-
-		Queue<Integer> q = new ArrayDeque<Integer>();
-		boolean[] vis = new boolean[n + 1];
-		for (int i = 0; i < truth.size(); i++) {
-			Arrays.fill(vis, false);
-
-			q.offer(truth.get(i));
-			vis[truth.get(i)] = true;
-
-			while (!q.isEmpty()) {
-				int cv = q.poll();
-				tp[cv] = true;
-
-				for (int j = 1; j < n + 1; j++) {
-					if (graph[cv][j] && !vis[j]) {
-						q.offer(j);
-						vis[j] = true;
-					}
-				}
-			}
-		}
-		
-//		System.out.println(truth);
-//		System.out.println(Arrays.toString(tp));
-		int cnt = 0;
-		L: for (int i = 0; i < m; i++) {
-			for (int j = 0; j < party[i].size(); j++) {
-				if (tp[party[i].get(j)])
-					continue L;
-			}
-			cnt++;
-		}
-
-		System.out.println(cnt);
-	}
-
+        st = new StringTokenizer(br.readLine());
+        int n = Integer.parseInt(st.nextToken());
+        int m = Integer.parseInt(st.nextToken());
+        
+        
+        st = new StringTokenizer(br.readLine());
+        
+        Queue<Integer> q = new ArrayDeque<>();
+        
+        boolean[] personVisited = new boolean[n+1];
+        boolean[] partyVisited = new boolean[m];
+        
+        int cnt = Integer.parseInt(st.nextToken());
+        for(int i = 0; i < cnt; i++) {
+        	int knowPerson = Integer.parseInt(st.nextToken());
+        	personVisited[knowPerson] = true;
+        	q.offer(knowPerson);
+        }
+        
+        List<Integer>[] personToParty = new ArrayList[n+1];
+        for(int i = 1; i < n+1; i++)
+        	personToParty[i] = new ArrayList<>();
+        
+        List<Integer>[] partyInPerson = new ArrayList[m];
+        for(int i = 0; i < m; i++) {
+        	partyInPerson[i] = new ArrayList<>();
+        	
+        	st = new StringTokenizer(br.readLine());
+        	cnt = Integer.parseInt(st.nextToken());
+        	
+        	for(int j = 0; j < cnt; j++) {
+        		int pn = Integer.parseInt(st.nextToken());
+        		partyInPerson[i].add(pn);
+        		personToParty[pn].add(i);
+        	}
+        }
+        
+        int ans = m;
+       
+        while(!q.isEmpty()) {
+        	int cur = q.poll();
+        	
+        	for(int party : personToParty[cur]) {
+        		if(partyVisited[party]) continue;
+        		partyVisited[party] = true;
+        		ans--;
+        		for(int pn : partyInPerson[party]) {
+        			if(personVisited[pn]) continue;
+        			personVisited[pn] = true;
+        			q.offer(pn);
+        		}
+        	}
+        }
+        
+        System.out.println(ans);
+    }
 }
