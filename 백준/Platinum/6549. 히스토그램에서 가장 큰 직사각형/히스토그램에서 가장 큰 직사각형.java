@@ -6,6 +6,7 @@ public class Main {
 
   static int[] arr, seg;
   static int n;
+  static long ans;
 
   public static void main(String[] args) throws Exception {
     BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
@@ -18,18 +19,18 @@ public class Main {
     while (true) {
       st = new StringTokenizer(br.readLine());
       n = Integer.parseInt(st.nextToken());
-
       if (n == 0) {
         break;
       }
+      ans = 0;
 
       for (int i = 0; i < n; i++) {
         arr[i] = Integer.parseInt(st.nextToken());
       }
       arr[100001] = Integer.MAX_VALUE;
       init(1, 0, n - 1);
-
-      sb.append(solve(0, n - 1)).append("\n");
+      solve(0, n - 1);
+      sb.append(ans).append("\n");
     }
 
     System.out.println(sb);
@@ -42,10 +43,10 @@ public class Main {
     }
 
     int mid = l + (r - l) / 2;
-    init(node * 2, l, mid);
-    init(node * 2 + 1, mid + 1, r);
+    init(node << 1, l, mid);
+    init(node << 1 | 1, mid + 1, r);
 
-    seg[node] = arr[seg[node * 2]] < arr[seg[node * 2 + 1]] ? seg[node * 2] : seg[node * 2 + 1];
+    seg[node] = arr[seg[node << 1]] < arr[seg[node << 1 | 1]] ? seg[node << 1] : seg[node << 1 | 1];
   }
 
   static int query(int node, int l, int r, int s, int e) {
@@ -58,24 +59,23 @@ public class Main {
     }
 
     int mid = l + (r - l) / 2;
-    int lv = query(node * 2, l, mid, s, e);
-    int rv = query(node * 2 + 1, mid + 1, r, s, e);
+    int lv = query(node << 1, l, mid, s, e);
+    int rv = query(node << 1 | 1, mid + 1, r, s, e);
 
     return arr[lv] < arr[rv] ? lv : rv;
   }
 
-  static long solve(int s, int e) {
+  static void solve(int s, int e) {
     if (s > e) {
-      return 0;
+      return;
     }
 
     int idx = query(1, 0, n - 1, s, e);
-    long ret = (long) arr[idx] * (e - s + 1);
+    ans = Math.max(ans, (long) arr[idx] * (e - s + 1));
 
-    ret = Math.max(ret, solve(s, idx - 1));
-    ret = Math.max(ret, solve(idx + 1, e));
+    solve(s, idx - 1);
+    solve(idx + 1, e);
 
-    return ret;
   }
 
 }
