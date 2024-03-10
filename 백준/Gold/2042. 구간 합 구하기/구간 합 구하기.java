@@ -4,8 +4,8 @@ import java.util.StringTokenizer;
 
 public class Main {
 
-  static long[] arr;
   static long[] seg;
+  static int n;
 
   public static void main(String[] args) throws Exception {
 
@@ -15,16 +15,17 @@ public class Main {
 
     st = new StringTokenizer(br.readLine());
 
-    int n = Integer.parseInt(st.nextToken());
+    n = Integer.parseInt(st.nextToken());
     int m = Integer.parseInt(st.nextToken());
     int k = Integer.parseInt(st.nextToken());
 
-    arr = new long[n];
-    seg = new long[4 * n];
+    seg = new long[n << 1];
     for (int i = 0; i < n; i++) {
-      arr[i] = Long.parseLong(br.readLine());
+      seg[n + i] = Long.parseLong(br.readLine());
     }
-    init(1, 0, n - 1);
+    for (int i = n - 1; i > 0; i--) {
+      seg[i] = seg[i * 2] + seg[i * 2 + 1];
+    }
 
     for (int i = 0; i < m + k; i++) {
       st = new StringTokenizer(br.readLine());
@@ -32,60 +33,39 @@ public class Main {
       int a = Integer.parseInt(st.nextToken());
       long b = Long.parseLong(st.nextToken());
       if (op == 1) {
-        update(1, 0, n - 1, a - 1, b);
+        update(a - 1, b);
       } else {
-        sb.append(query(1, 0, n - 1, a - 1, b - 1)).append("\n");
+        sb.append(query(a - 1, (int) b - 1)).append("\n");
       }
     }
     System.out.println(sb);
   }
 
-  static void init(int node, int l, int r) {
-    if (l == r) {
-      seg[node] = arr[l];
-      return;
+  static void update(int index, long value) {
+    index += n;
+    long diff = value - seg[index];
+
+    while (index > 0) {
+      seg[index] += diff;
+      index >>>= 1;
     }
-
-    int mid = l + (r - l) / 2;
-
-    init(node * 2, l, mid);
-    init(node * 2 + 1, mid + 1, r);
-
-    seg[node] = seg[node * 2] + seg[node * 2 + 1];
   }
 
-  static void update(int node, int l, int r, int index, long value) {
-    if (index < l || r < index) {
-      return;
+  static long query(int s, int e) {
+    s += n;
+    e += n;
+
+    long sum = 0;
+    while (s <= e) {
+      if ((s & 1) == 1) {
+        sum += seg[s++];
+      }
+      if ((e & 1) == 0) {
+        sum += seg[e--];
+      }
+      s >>>= 1;
+      e >>>= 1;
     }
-
-    if (l == r) {
-      seg[node] = value;
-      return;
-    }
-
-    int mid = l + (r - l) / 2;
-
-    update(node * 2, l, mid, index, value);
-    update(node * 2 + 1, mid + 1, r, index, value);
-
-    seg[node] = seg[node * 2] + seg[node * 2 + 1];
+    return sum;
   }
-
-  static long query(int node, int l, int r, int s, long e) {
-    if (r < s || e < l) {
-      return 0;
-    }
-
-    if (s <= l && r <= e) {
-      return seg[node];
-    }
-
-    int mid = l + (r - l) / 2;
-
-    long lv = query(node * 2, l, mid, s, e);
-    long rv = query(node * 2 + 1, mid + 1, r, s, e);
-    return lv + rv;
-  }
-
 }
