@@ -15,12 +15,9 @@ public class Main {
 
 		int[][] graph = new int[n + 1][n + 1];
 
+		int INF = 100000000;
 		for (int i = 1; i < n + 1; i++) {
-			for (int j = 1; j < n + 1; j++) {
-				if (i == j)
-					continue;
-				graph[i][j] = 100000000;
-			}
+			Arrays.fill(graph[i], INF);
 		}
 
 		for (int i = 0; i < m; i++) {
@@ -41,13 +38,9 @@ public class Main {
 		
 		int min = 100000000;
 		
-		for(int i = 1; i < n + 1; i++) {
-			for(int j = i+1; j < n + 1; j++) {
-				int path = graph[i][j] + graph[j][i];
-				if(path < min)
-					min = path;
-			}
-		}
+		for(int i = 1; i < n + 1; i++) 
+			min = min < graph[i][i] ? min : graph[i][i];
+		
 		if(min >= 100000000)
 			System.out.println(-1);
 		else
