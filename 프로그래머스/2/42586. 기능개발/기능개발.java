@@ -2,30 +2,25 @@ import java.util.*;
 
 class Solution {
     public int[] solution(int[] progresses, int[] speeds) {
-        int size = progresses.length;
+        ArrayList<Integer> answer = new ArrayList<>();
+        int n = progresses.length;
         
-        int[] arr = new int[size];
-        
-        for(int i = 0; i < size; i++) 
-            arr[i] = (int)Math.ceil((100.0 - progresses[i]) / speeds[i]);
-        
-        ArrayList<Integer> list = new ArrayList<>();
-        int prg = arr[0], cnt = 1;
-        for(int i = 1; i < size; i++) {
-            if(prg >= arr[i]) {
+        int idx,cnt, time;
+        idx = cnt = time = 0;
+        while(idx < n) {
+            if(progresses[idx] + time * speeds[idx] >= 100) {
+                idx++;
                 cnt++;
+            } else {
+                if(cnt != 0) {
+                    answer.add(cnt);
+                    cnt=0;
+                }
+                time++;
             }
-            else if(prg < arr[i]) {
-                list.add(cnt);
-                prg = arr[i];
-                cnt = 1;
-            }
-        } list.add(cnt);
+        }
+        answer.add(cnt);
         
-        int[] answer = new int[list.size()];
-        for(int i = 0;  i < list.size(); i++)
-            answer[i] = list.get(i);
-        
-        return answer;
+        return answer.stream().mapToInt(Integer::intValue).toArray();
     }
 }
