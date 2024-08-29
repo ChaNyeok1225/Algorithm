@@ -3,85 +3,84 @@ import java.util.*;
 class Solution {
     
     class Node {
-        Integer idx;
-        Node next;
-        Node prev;
+        int index;
+        boolean isDeleted = false;
+        Node prev, next;
         
-        Node (Integer i) {
-            idx = i;
+        Node(int index) {
+            this.index = index;
         }
     }
     
     public String solution(int n, int k, String[] cmd) {
-        StringTokenizer st;
+        Node[] nodes = new Node[n];
         
-        Node root = new Node(null);
-        Node cursor = root;
-        Stack<Node> deletedRows = new Stack<>();
+        Node head,tail;
         
-        Node tmp = root;
-        for(int i = 0; i < n+1; i++) {
+        head = tail = new Node(-1);
+        
+        for(int i = 0; i < n; i++) {
             Node newNode = new Node(i);
-            
-            if(i == k)
-                cursor = newNode;
-            
-            tmp.next = newNode;
-            newNode.prev = tmp;
-            tmp = newNode;
+            newNode.prev = tail;
+            tail.next = newNode;
+            tail = newNode;
+            nodes[i] = newNode;
         }
         
+        Node cur = nodes[k];
+        Node del;
+        ArrayDeque<Node> stack = new ArrayDeque<>();
+        
+        StringTokenizer st;
         String inst;
         int op;
-        for(String command : cmd) {
-            st = new StringTokenizer(command);
-        
+        for(int i = 0; i < cmd.length; i++) {
+            st = new StringTokenizer(cmd[i]);
             inst = st.nextToken();
             
             switch(inst) {
-                case "D" :
-                    op = Integer.parseInt(st.nextToken());       
-                    for(int i = 0; i < op; i++)
-                        cursor = cursor.next;
+                case "U" :
+                    op = Integer.parseInt(st.nextToken());
+                    for(int j = 0; j < op; j++) 
+                        cur = cur.prev;
                     break;
                     
-                case "U" :
-                    op = Integer.parseInt(st.nextToken());        
-                    for(int i = 0; i < op; i++)
-                        cursor = cursor.prev;
+                case "D" :
+                    op = Integer.parseInt(st.nextToken());
+                    for(int j = 0; j < op; j++)
+                        cur = cur.next;
                     break;
                     
                 case "C" :
-                    deletedRows.push(cursor);
+                    cur.isDeleted = true;
+                    stack.offer(cur);
                     
-                    cursor.prev.next = cursor.next;
-                    cursor.next.prev = cursor.prev;
-                    if(cursor.next.idx == n)
-                        cursor = cursor.prev;
-                    else 
-                        cursor = cursor.next;
+                    cur.prev.next = cur.next;
+                    if(cur.next == null)
+                        cur = cur.prev;
+                    else {
+                        cur.next.prev = cur.prev;
+                        cur = cur.next;
+                    }
                     break;
                     
                 case "Z" :
-                    Node deletedNode = deletedRows.pop();
-                    
-                    deletedNode.prev.next = deletedNode;
-                    deletedNode.next.prev = deletedNode;
+                    del = stack.pollLast();
+                    del.isDeleted = false;
+                    del.prev.next = del;
+                    if(del.next != null)
+                        del.next.prev = del;
                     break;
             }
             
         }
         
         StringBuilder sb = new StringBuilder();
-        tmp = root.next;
-        
-        for(int i = 0; i < n; i++) {
-            if(tmp.idx == i) {
-                sb.append("O");
-                tmp = tmp.next;
-            } else {
+        for(int i = 0; i < n; i++) { 
+            if(nodes[i].isDeleted)
                 sb.append("X");
-            }
+            else
+                sb.append("O");
         }
         
         return sb.toString();
