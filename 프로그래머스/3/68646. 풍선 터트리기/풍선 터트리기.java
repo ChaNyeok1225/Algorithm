@@ -1,24 +1,33 @@
-import java.util.*;
-
 class Solution {
     public int solution(int[] a) {
         int answer = 0;
-        int len = a.length;
         
-        int leftMin = Integer.MAX_VALUE;
-        TreeSet<Integer> ts = new TreeSet<>();
+        int n = a.length;
         
-        for(int i = 0; i < len; i++) {
-            ts.add(a[i]);
+        int[] larr = new int[n];
+        int[] rarr = new int[n];
+        
+        int min;
+        min = Integer.MAX_VALUE;
+        for(int i = 0; i < n; i++) {
+            min = min < a[i] ? min : a[i];
+            larr[i] = min;
+        }
+        min = Integer.MAX_VALUE;
+        for(int i = n - 1; i >= 0; i--) {
+            min = min < a[i] ? min : a[i];
+            rarr[i] = min;
         }
         
-        for(int i = 0; i < len; i++) {
-            ts.remove(a[i]);
-            
-            if(!(a[i] > leftMin && (!ts.isEmpty() && a[i] > ts.first())))
+        
+        for(int i = 0; i < n; i++) {
+            if(i == 0 || i == n - 1) {
                 answer++;
-            
-            leftMin = leftMin < a[i] ? leftMin : a[i];
+                continue;
+            }
+            if(larr[i-1] < a[i] && rarr[i+1] < a[i])
+                continue;
+            answer++;
         }
         
         return answer;
