@@ -9,25 +9,23 @@ public class Main {
 
         int n = Integer.parseInt(br.readLine());
 
-        PriorityQueue<Integer> pq = new PriorityQueue<>();
-
-        int[][] arr = new int[n][2];
+        TreeMap<Integer, Integer> map = new TreeMap<>();
+        int s, e;
         for(int i = 0; i < n; i++) {
             st = new StringTokenizer(br.readLine());
             st.nextToken();
-            arr[i][0] = Integer.parseInt(st.nextToken());
-            arr[i][1] = Integer.parseInt(st.nextToken());
+            s = Integer.parseInt(st.nextToken());
+            e = Integer.parseInt(st.nextToken());
+            map.put(s, map.getOrDefault(s, 0) + 1);
+            map.put(e, map.getOrDefault(e, 0) - 1);
         }
 
-        Arrays.sort(arr, (a, b) -> a[0] == b[0] ? a[1] - b[1] : a[0] - b[0]);
-
-        for(int i = 0; i < n; i++) {
-            if(!pq.isEmpty() && pq.peek() <= arr[i][0]) {
-                pq.poll();
-            }
-            pq.offer(arr[i][1]);
+        int answer = 0;
+        int cur = 0;
+        for(int v : map.values()) {
+            cur += v;
+            answer = answer > cur ? answer : cur;
         }
-
-        System.out.println(pq.size());
+        System.out.println(answer);
     }
 }
