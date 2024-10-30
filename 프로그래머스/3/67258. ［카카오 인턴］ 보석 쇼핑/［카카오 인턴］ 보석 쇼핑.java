@@ -4,49 +4,30 @@ class Solution {
     public int[] solution(String[] gems) {
         int[] answer = new int[2];
         int n = gems.length;
-        HashMap<String, Integer> index = new HashMap<>();
+        int[] Igems = new int[n];
         
-        int idx = 0;
+        Map<String, Integer> map = new HashMap<>();
+        int total = 0;
         for(int i = 0; i < n; i++) {
-            Integer tmp = index.putIfAbsent(gems[i], idx);
-            if(tmp == null)
-                idx++;
+            Integer index = map.putIfAbsent(gems[i], total);
+            if(index == null)
+                index = total++;
+            Igems[i] = index;
         }
-
-        int total = index.size();
-        if(total == 1) {
-            return new int[] {1,1};
-        }
+        
         int[] count = new int[total];
-        int col = 0, max = Integer.MAX_VALUE;
+        int jewelCase = 0, idx = 0;
+        int min = Integer.MAX_VALUE;
         
-        idx = 0;
-        int cur = index.get(gems[0]);
-        count[cur]++;
-        col++;
-        
-        for(int i = 1; i < n; i++) {
-            cur = index.get(gems[i]);
-            
-            count[cur]++;
-            if(count[cur] == 1) {
-                col++;
+        for(int i = 0; i < n; i++) {
+            while(idx < n && jewelCase != total) 
+                jewelCase += count[Igems[idx++]]++ == 0 ? 1 : 0;
+            if(idx - i < min && jewelCase == total) {
+                answer[0] = i + 1; answer[1] = idx;
+                min = idx - i;    
             }
-            
-            // System.out.println("i : " + i + " idx : " + idx + " , col : " + col + " >> " + Arrays.toString(count));
-            
-            while(count[index.get(gems[idx])] > 1) {
-                count[index.get(gems[idx++])]--;
-            }
-            
-            if(col == total && max > i - idx) {
-                max = i - idx;
-                answer[0] = idx + 1;
-                answer[1] = i + 1;
-            }
-            
+            jewelCase -= --count[Igems[i]] == 0 ? 1 : 0;
         }
-        
         
         return answer;
     }
