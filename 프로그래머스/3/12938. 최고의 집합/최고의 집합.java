@@ -1,38 +1,17 @@
-import java.util.*;
-
 class Solution {
     public int[] solution(int n, int s) {
-        int[] answer = new int[n];
+        int[] answer = {-1};
         
-        if(n > s) {
-            return new int[] {-1};
-        }
+        int d = s / n;
+        int e = s % n;
         
-        int left = 1, right = s;
-        int mid = 0, ans = 1;
-        while(left <= right) {
-            mid = left + (right - left) /2;
+        if(d != 0) {
+            answer = new int[n];
             
-            int cnt = s / mid;
-            
-            if(cnt >= n) {
-                left = mid + 1;
-                ans = mid;
-            } else {
-                right = mid - 1;
+            for(int i = 0; i < n; i++) {
+                answer[i] = d + (i > n - e - 1? 1 : 0);
             }
-        }
-        
-        Arrays.fill(answer, ans);
-        
-        int idx = n-1;
-        int ex = s - ans * n;
-        
-        while(ex-- != 0) {
-            answer[idx]++;
-            idx--;
-            if(idx == -1)
-                idx = n-1;
+            
         }
         
         return answer;
