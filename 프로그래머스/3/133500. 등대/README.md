@@ -1,6 +1,6 @@
 # [level 3] 등대 - 133500 
 
-[문제 링크](https://school.programmers.co.kr/learn/courses/30/lessons/133500?language=java) 
+[문제 링크](https://school.programmers.co.kr/learn/courses/30/lessons/133500) 
 
 ### 성능 요약
 
@@ -16,7 +16,7 @@
 
 ### 제출 일자
 
-2024년 11월 05일 19:52:00
+2024년 11월 05일 19:52:21
 
 ### 문제 설명
 
