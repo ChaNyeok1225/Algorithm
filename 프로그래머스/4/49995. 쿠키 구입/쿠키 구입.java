@@ -1,36 +1,34 @@
+import java.util.*;
+
 class Solution {
     public int solution(int[] cookie) {
         int answer = 0;
-        int len = cookie.length;
+        int n = cookie.length;
         
-        
-        for(int k = 0; k < len; k++) {
-            
-            int ai = 1;
-            int bi = 1;
-            int av = cookie[k];
-            int bv = 0;
-            
-            
-            while(true) {        
-                if(av == bv) {
-                    answer = answer > av ? answer : av;
+        int l, r, ltotal, rtotal;
+        for(int m = 0; m < n - 1; m++) {
+            l = m;
+            r = m + 1;
+            ltotal = cookie[m];
+            rtotal = cookie[m+1];
+           
+            while(true) {
+                if(ltotal == rtotal) {
+                    answer = answer > ltotal ? answer : ltotal;
                 }
                 
-                if(av > bv) {
-                    if(k+bi >= len) break;
-                    
-                    bv += cookie[k+bi++];
+                if(ltotal <= rtotal) {
+                    l--;
+                    if(l < 0)
+                        break;
+                    ltotal += cookie[l];
                 } else {
-                    if(k - ai < 0) break;
-                    
-                    av += cookie[k - ai++];
+                    r++;
+                    if(r >= n)
+                        break;
+                    rtotal += cookie[r];
                 }
-                
             }
-            
-            
-            
         }
         
         
