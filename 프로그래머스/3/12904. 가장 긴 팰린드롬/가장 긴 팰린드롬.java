@@ -3,36 +3,42 @@ class Solution
     public int solution(String s)
     {
         int answer = 1;
-        int len = s.length();
-        char[] c = s.toCharArray();
-        
-        
-        int plen, l;
-        boolean eflag, oflag; 
-        for(int i = 0; i < len; i++) {
-            plen = 1;
-            eflag = oflag = true;
+
+        char[] str = s.toCharArray();
+        int n = s.length();
+        int l, r, cnt;
+        for(int i = 0; i < n; i++) {
+            l = i;
+            r = i + 1;
+            cnt = 0;
             
-            while(i - plen >= 0) {
-                
-                if(oflag && i + plen < len && c[i + plen] == c[i - plen]) {
-                     answer = answer > plen * 2 + 1 ? answer : plen * 2 + 1;
-                } else {
-                    oflag = false;
-                }
-                
-                if(eflag && i + plen - 1 < len && c[i + plen - 1] == c[i - plen]) {
-                     answer = answer > plen * 2 ? answer : plen * 2;
-                } else {
-                    eflag = false;
-                }
-                
-                if(!eflag && !oflag)
+            while(true) {
+                if(l < 0 || r >= n)
                     break;
                 
-                plen++;
+                if(str[l] != str[r])
+                    break;
+                cnt += 2;
+                answer = answer > cnt ? answer : cnt;       
+                l--;
+                r++;
             }
             
+            l = i - 1;
+            r = i + 1;
+            cnt = 1;
+            
+            while(true) {
+                 if(l < 0 || r >= n)
+                    break;
+                
+                if(str[l] != str[r])
+                    break;
+                cnt += 2;
+                answer = answer > cnt ? answer : cnt;       
+                l--;
+                r++;
+            }
         }
 
         return answer;
