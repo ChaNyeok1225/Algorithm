@@ -3,35 +3,41 @@ import java.util.*;
 class Solution {
     
     public int solution(int[][] scores) {
-        int answer = 1;
+        int n = scores.length;
         
-        int len = scores.length;
-        int[] target = scores[0];
-        int targetScore = target[0] + target[1];
+        int[] wonho = {scores[0][0], scores[0][1]};
         
-        Arrays.sort(scores, (a,b) -> {
-                if(a[0] == b[0])
-                    return a[1] - b[1];
-                return b[0] - a[0];
-        });
+        int MAX_VAL = 100_005;
+        int[] acc = new int[MAX_VAL];
         
-        int prevMax = 0, sum;
-        for(int[] score : scores) {
-            sum = score[0] + score[1];
-            
-            if(target[0] < score[0] && target[1] < score[1])
-                return -1;
-            
-            if(prevMax > score[1])
-                continue;
-            
-            if(targetScore < sum)
-                answer++;
-            
-            prevMax = prevMax > score[1] ? prevMax : score[1];
+        for(int i = 0; i < n; i++) {
+            acc[scores[i][0]] = Math.max(acc[scores[i][0]], scores[i][1]);
+        }
+        for(int i = MAX_VAL - 2; i >= 0; i--) {
+            acc[i] = Math.max(acc[i], acc[i+1]);
         }
         
+        Arrays.sort(scores, (a,b) -> {
+            return -Integer.compare(a[0]+a[1], b[0]+b[1]);
+        });
         
-        return answer;
+        int grade = 0;
+        int cnt = 0;
+        int prev = Integer.MAX_VALUE;
+        for(int i = 0; i < n; i++) {
+            if(scores[i][1] < acc[scores[i][0] + 1])
+                continue;
+            cnt++;
+            
+            if(prev > scores[i][0] + scores[i][1]) {
+                grade += cnt;
+                cnt = 0;
+                prev = scores[i][0] + scores[i][1];
+            }
+            if(wonho[0] == scores[i][0] && wonho[1] == scores[i][1])
+                return grade;
+        }
+        
+        return -1;
     }
 }
