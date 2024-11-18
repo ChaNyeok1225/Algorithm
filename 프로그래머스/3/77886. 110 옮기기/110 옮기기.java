@@ -1,89 +1,70 @@
+
+
+// 문제의 키워드
+// - 문자열 중 "110"을 뽑아서 임의의 위치에 삽입
+// - 위의 행동을 통해 만들 수 있는 사전 순 가장 작은 문자
+
+
+
+
+// 접근법 분석
+// - s의 길이 1,000,000
+//     - N 또는 NlogN 풀이 가능
+//     - 그리디로 판단
+// - "110"의 경우, 두 개를 사용했을 때, "110110"이 가장 최적의 방법
+// - 모든 "110"을 제거한 후 "110"보다 우선순위가 낮은 곳을 찾아 해당 위치에 모든 "110"을 삽입
+
+
+
+
 import java.util.*;
 
 class Solution {
-    
-    int[] kmp;
-    char[] search;
-    ArrayDeque<Character> q, tmp;
-    
     public String[] solution(String[] s) {
         String[] answer = new String[s.length];
+        StringBuilder sb;
         
-        search = new char[] {'1', '1', '0'};
-        kmp = new int[] {0, 1, 0};
-        
-        int cnt, j, ex;
-        char[] str;
-        boolean flag;
-        tmp = new ArrayDeque<>();
-        StringBuilder sb = new StringBuilder();
-        StringBuilder zzo = new StringBuilder();
-        
+        int index, cnt, insert;
+        char[] chars, arr = new char[1_000_001];
         for(int t = 0; t < s.length; t++) {
-            str = s[t].toCharArray();
-            cnt = j = 0;
-            q = new ArrayDeque<>();
+            index = cnt = insert = 0;
+            chars = s[t].toCharArray();
+
+            for(int i = 0; i < chars.length; i++) {
+                arr[index] = chars[i];
+                if(index > 1) {
+                    if(arr[index - 2] == '1' && arr[index-1] == '1' && arr[index] == '0') {
+                        cnt++;
+                        index -= 3;
+                    }
+                }
+                index++;
+            }            
             
-            for(int i = 0; i < str.length; i++) {
-                if(j > 0 && str[i] != search[j]) j = kmp[j-1];
-                if(str[i] == search[j]) ++j;
-                
-                q.offer(str[i]);
-                
-                if(j == 3) {
-                    j = replaceQueue();
-                    cnt++;
+            
+            for(int i = index - 1; i >= 0; i--) {
+                if(arr[i] == '0') {
+                    insert = i + 1;
+                    break;
                 }
             }
             
+            sb = new StringBuilder();
+            for(int i = 0; i < insert; i++) {
+                sb.append(arr[i]);
+            }
             for(int i = 0; i < cnt; i++) {
-                zzo.append("110");
+                sb.append("110");
+            }
+            for(int i = insert; i < index; i++) {
+                sb.append(arr[i]);
             }
             
-            while(!q.isEmpty())
-                sb.append(q.poll());
-            
-            sb.insert(findMin(sb.toString()), zzo);
-            
             answer[t] = sb.toString();
-            sb.setLength(0);
-            zzo.setLength(0);
+            
         }
+        
         
         return answer;
-    }
-    
-    int findMin(String s) {
-        int j = 0;
-        for(int i = 0; i < s.length(); i++) {
-            while(j > 0 && s.charAt(i) != '1') --j;
-            if(s.charAt(i) == '1') ++j;
-            if(j == 3) 
-                return i - 2;
-        }
-        return s.length() - j;
-    }
-    
-    int replaceQueue() {
-        
-        for(int i = 0; i < 3; i++)
-            q.pollLast();
-        
-        for(int i = 0; i < 2 && !q.isEmpty(); i++) 
-            tmp.offer(q.pollLast());
-    
-        int j = 0;
-        char c;
-        
-        while(!tmp.isEmpty()) {
-            c = tmp.pollLast();
-       
-            while(j > 0 && c != search[j]) j = kmp[j-1];
-            if(c == search[j]) ++j;
-            
-            q.offer(c);
-        }
-        
-        return j;
     }
 }

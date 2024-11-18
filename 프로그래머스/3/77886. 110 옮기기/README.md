@@ -1,10 +1,10 @@
 # [level 3] 110 옮기기 - 77886 
 
-[문제 링크](https://school.programmers.co.kr/learn/courses/30/lessons/77886#qna) 
+[문제 링크](https://school.programmers.co.kr/learn/courses/30/lessons/77886) 
 
 ### 성능 요약
 
-메모리: 152 MB, 시간: 158.48 ms
+메모리: 102 MB, 시간: 56.16 ms
 
 ### 구분
 
@@ -16,7 +16,7 @@
 
 ### 제출 일자
 
-2024년 11월 01일 14:24:56
+2024년 11월 18일 19:56:02
 
 ### 문제 설명
 
