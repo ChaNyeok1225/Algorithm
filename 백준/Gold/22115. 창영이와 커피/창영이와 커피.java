@@ -26,12 +26,11 @@ public class Main {
 
         for (int i = 1; i <= n; i++) {
             for (int j = k; j >= num[i]; j--) {
-                if(dp[j - num[i]] == -1) continue;
                 dp[j] = Math.min(dp[j], dp[j-num[i]] + 1);
             }
         }
 
-        if(dp[k] == INF) dp[k] = - 1;
+        if(dp[k] >= INF) dp[k] = - 1;
         System.out.println(dp[k]);
 
 
