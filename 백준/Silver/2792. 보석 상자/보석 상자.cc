@@ -6,7 +6,10 @@ int N, M;
 int jewel[300001];
 
 int main() {
-	
+	ios::sync_with_stdio(false);
+	cin.tie(nullptr);
+	cout.tie(nullptr);
+
 	cin >> N >> M;
 
 	int l = 1, r = 1;
