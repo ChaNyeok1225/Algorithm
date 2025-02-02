@@ -22,6 +22,7 @@ int main() {
 	}
 
 	queue<int> q;
+	int maxCount = 0;
 
 	for (int i = 1; i <= N; i++) {
 		q.push(i);
@@ -41,20 +42,13 @@ int main() {
 				}
 			}
 		}
+		maxCount = max(maxCount, (int)vis[i].count());
 	}
-	int ans = 0;
 	vector<int> v;
 	for (int i = 1; i <= N; i++) {
 		int cnt = vis[i].count();
-		if (ans > cnt) continue;
-		
-		if (ans <= cnt) {
-			if (ans < cnt) {
-				ans = cnt;
-				v.clear();
-			}
+		if (cnt == maxCount)
 			v.push_back(i);
-		}
 	}
 
 	for (int res : v) {
