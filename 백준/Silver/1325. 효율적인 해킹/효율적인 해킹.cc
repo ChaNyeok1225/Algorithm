@@ -1,0 +1,64 @@
+#include <iostream>
+#include <queue>
+#include <vector>
+#include <bitset>
+#include <algorithm>
+using namespace std;
+
+int N, M;
+vector<int> conn[10001];
+bitset<10001> vis[10001];
+
+int main() {
+	ios::sync_with_stdio(false);
+	cin.tie(0); cout.tie(0);
+	
+	cin >> N >> M;
+
+	int a, b;
+	for (int i = 0; i < M; i++) {
+		cin >> a >> b;
+		conn[b].push_back(a);
+	}
+
+	queue<int> q;
+
+	for (int i = 1; i <= N; i++) {
+		q.push(i);
+		vis[i].set(i);
+
+		while (!q.empty()) {
+			int cur = q.front();
+			q.pop();
+
+			for (int next : conn[cur]) {
+				if (vis[i][next]) continue;
+				if (next < i)
+					vis[i] |= vis[next];
+				else {
+					q.push(next);
+					vis[i].set(next);
+				}
+			}
+		}
+	}
+	int ans = 0;
+	vector<int> v;
+	for (int i = 1; i <= N; i++) {
+		int cnt = vis[i].count();
+		if (ans > cnt) continue;
+		
+		if (ans <= cnt) {
+			if (ans < cnt) {
+				ans = cnt;
+				v.clear();
+			}
+			v.push_back(i);
+		}
+	}
+
+	for (int res : v) {
+		cout << res << " ";
+	}
+
+}
