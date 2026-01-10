@@ -1,91 +1,98 @@
-#include <iostream>
-#include <queue>
-using namespace std;
+#include <stdio.h>
 
-struct Pos { int r;  int c; };
-
+int R, C;
 char map[1505][1505];
-int area[1505][1505];
-int r, c;
+int p[1505][1505];
 
-queue<Pos> q[2];
+int dr[] = { 1, 0, -1, 0 }, dc[] = { 0, 1, 0, -1 };
+
+struct Data {
+	int r;
+	int c;
+} que[2][2250000];
+
+int head[2] = { 0, }, tail[2] = { 0, };
+
+int swan[2];
 
 int Find(int a) {
-	int row = a / c;
-	int col = a % c;
-
-	if (a == area[row][col]) return a;
-	return area[row][col] = Find(area[row][col]);
+	int row = a / C;
+	int col = a % C;
+	if (p[row][col] == a) return a;
+	return p[row][col] = Find(p[row][col]);
 }
 
 void Union(int a, int b) {
 	a = Find(a);
 	b = Find(b);
 
-	area[a / c][a % c] = b;
+	if (a == b)
+		return;
+
+	p[b / C][b % C] = a;
 }
 
-bool OOR(int row, int col) {
-	return row < 0 || row >= r || col < 0 || col >= c;
+void BFS(int idx) {
+	int nr, nc;
+
+	int aidx = idx ^ 1;
+	while (head[idx] != tail[idx]) {
+		Data d = que[idx][head[idx]++];
+		int number = d.r * C + d.c;
+		map[d.r][d.c] = '.';
+
+		for (int dir = 0; dir < 4; dir++) {
+			nr = d.r + dr[dir];
+			nc = d.c + dc[dir];
+
+			if (nr < 0 || nr >= R || nc < 0 || nc >= C)
+				continue;
+			
+			if (map[nr][nc] == 'X') {
+				que[aidx][tail[aidx]++] = {nr, nc};
+				map[nr][nc] = 'N';
+				continue;
+			}
+			else if (map[nr][nc] == '.') {
+				Union(number, nr * C + nc);
+			}
+
+		}
+	}
 }
 
 int main() {
-	ios::sync_with_stdio(false);
-	cin.tie(nullptr);
+	int si = 0;
+	int pi = 0;
+	int qi = 0;
 
-	bool seq = 0;
-	int L[2] = {};
-	cin >> r >> c;
-
-	int label = 0;
-	int index = 0;
-	for (int i = 0; i < r; i++) {
-		for (int j = 0; j < c; j++) {
-			cin >> map[i][j];
-			if (map[i][j] != 'X') {
-				q[seq].push({ i ,j });
-			}
+	scanf("%d %d", &R, &C);
+	for (int i = 0; i < R; i++) {
+		for (int j = 0; j < C; j++) {
+			scanf(" %c", &map[i][j]);
 			if (map[i][j] == 'L') {
-				L[index++] = label;
 				map[i][j] = '.';
+				swan[si++] = pi;
 			}
-			area[i][j] = label++;
+			if (map[i][j] != 'X') {
+				que[qi][tail[qi]++] = { i , j };
+			}
+			p[i][j] = pi++;
 		}
 	}
 
-	int dr[] = { 1, 0, -1, 0 }, dc[] = { 0, 1, 0, -1 };
-
 	int day = 0;
-	int number;
 	while (true) {
+		
+		BFS(qi);
+		qi ^= 1;
 
-		while (!q[seq].empty()) {
-			Pos p = q[seq].front(); q[seq].pop();
-			number = p.r * c + p.c;
-			map[p.r][p.c] = '.';
-
-			for (int d = 0; d < 4; ++d) {
-				int nr = p.r + dr[d];
-				int nc = p.c + dc[d];
-
-				if (OOR(nr, nc))
-					continue;
-
-				if (map[nr][nc] == 'X') {
-					q[!seq].push({ nr, nc });
-					map[nr][nc] = 'N';
-				}
-				else if(map[nr][nc] == '.') {
-					Union(number, nr * c + nc);
-				}
-			}
-		}
-
-		seq = !seq;
-		if (Find(L[0]) == Find(L[1]))
+		if (Find(swan[0]) == Find(swan[1])) {
+			printf("%d", day);
 			break;
+		}
 		day++;
 	}
 
-	cout << day;
+	return 0;
 }
