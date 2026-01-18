@@ -1,35 +1,37 @@
 #include <stdio.h>
+#define MIN(A, B) A < B ? A : B
 
 using ll = long long;
-constexpr ll MOD = 1'000'000'007;
 
+constexpr int MOD = 1'000'000'007;
 int N, K;
 
 ll Pow(ll a, ll b) {
-	ll res = 1;
-	for (; b; b >>= 1, a = a * a % MOD) {
-		if (b & 1) {
-			res = res * a % MOD;
-		}
+	ll ret = 1;
+	while (b) {
+		if (b & 1)
+			ret = (ret * a) % MOD;
+		a = (a * a) % MOD;;
+		b >>= 1;
 	}
-	return res;
+	return ret;
 }
 
 int main() {
-
 	scanf("%d%d", &N, &K);
+	K = MIN(K, N - K);
 
-	ll n = 1, k = 1;
+	ll a = 1;
+	ll b = 1;
+
 	for (int i = 0; i < K; i++) {
-		n *= N - i;
-		k *= K - i;
-
-		n %= MOD;
-		k %= MOD;
+		a *= N - i;
+		a %= MOD;
+		b *= K - i;
+		b %= MOD;
 	}
 
-	k = Pow(k, MOD - 2);
-
-	ll ans = n * k % MOD;
-	printf("%ld", ans);
+	b = Pow(b, MOD - 2);
+	printf("%lld", (a * b) % MOD);
+	return 0;
 }
